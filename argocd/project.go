@@ -8,6 +8,7 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+// CreateProject on a struct called Client. It takes a name argument and returns a pointer to v1alpha1.AppProject and an error.
 func (c *Client) CreateProject(name string) (*v1alpha1.AppProject, error) {
 	return c.projectClient.Create(context.Background(), &project.ProjectCreateRequest{
 		Project: &v1alpha1.AppProject{
@@ -18,6 +19,7 @@ func (c *Client) CreateProject(name string) (*v1alpha1.AppProject, error) {
 	})
 }
 
+// DeleteProject on the Client struct in Go. It takes a name parameter and returns an error.
 func (c *Client) DeleteProject(name string) error {
 	_, err := c.projectClient.Delete(context.Background(), &project.ProjectQuery{
 		Name: name,
@@ -26,6 +28,7 @@ func (c *Client) DeleteProject(name string) error {
 	return err
 }
 
+// GetProject on the Client struct in Go. It takes a name parameter and returns a pointer to v1alpha1.AppProject and an error.
 func (c *Client) GetProject(name string) (*v1alpha1.AppProject, error) {
 	return c.projectClient.Get(context.Background(), &project.ProjectQuery{
 		Name: name,

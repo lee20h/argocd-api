@@ -8,6 +8,7 @@ import (
 	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 )
 
+// AddDestination on the Client struct in Go. It takes a name parameter and returns an error.
 func (c *Client) AddDestination(projectName, server, namespace, name string) error {
 	p, err := c.GetProject(projectName)
 	if err != nil {

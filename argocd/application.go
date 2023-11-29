@@ -7,57 +7,37 @@ import (
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func (c *Client) CreateApplication(app *v1alpha1.Application) (*v1alpha1.Application, error) {
-	application.ApplicationCreateRequest{
-		Application: v1alpha1.Application{
-			TypeMeta: v1.TypeMeta{
-				Kind:       "",
-				APIVersion: "",
-			},
-			ObjectMeta: v1.ObjectMeta{
-				Name:                       "",
-				GenerateName:               "",
-				Namespace:                  "",
-				UID:                        "",
-				ResourceVersion:            "",
-				Generation:                 0,
-				CreationTimestamp:          v1.Time{},
-				DeletionTimestamp:          nil,
-				DeletionGracePeriodSeconds: nil,
-				Labels:                     nil,
-				Annotations:                nil,
-				OwnerReferences:            nil,
-				Finalizers:                 nil,
-				ManagedFields:              nil,
-			},
-			Spec: v1alpha1.ApplicationSpec{
-				Source:               nil,
-				Destination:          v1alpha1.ApplicationDestination{},
-				Project:              "",
-				SyncPolicy:           nil,
-				IgnoreDifferences:    nil,
-				Info:                 nil,
-				RevisionHistoryLimit: nil,
-				Sources:              nil,
-			},
-			Status: v1alpha1.ApplicationStatus{
-				Resources:            nil,
-				Sync:                 v1alpha1.SyncStatus{},
-				Health:               v1alpha1.HealthStatus{},
-				History:              nil,
-				Conditions:           nil,
-				ReconciledAt:         nil,
-				OperationState:       nil,
-				ObservedAt:           nil,
-				SourceType:           "",
-				Summary:              v1alpha1.ApplicationSummary{},
-				ResourceHealthSource: "",
-				SourceTypes:          nil,
-			},
-			Operation: nil,
+// CreateApplication on the Client struct in Go. It takes no parameters and returns a pointer to v1alpha1.Application and an error.
+func (c *Client) CreateApplication() (*v1alpha1.Application, error) {
+	app := &v1alpha1.Application{
+		TypeMeta: v1.TypeMeta{
+			Kind:       "Application",
+			APIVersion: "argoproj.io/v1alpha1",
 		},
-		Upsert:   nil,
-		Validate: nil,
+		ObjectMeta: v1.ObjectMeta{
+			Name:              "",
+			Namespace:         "",
+			CreationTimestamp: v1.Time{Time: v1.Now().Time},
+		},
+		Spec: v1alpha1.ApplicationSpec{
+			Source: nil,
+			Destination: v1alpha1.ApplicationDestination{
+				Name:      "",
+				Namespace: "",
+			},
+			Project:    "",
+			SyncPolicy: nil,
+			Sources: []v1alpha1.ApplicationSource{
+				{
+					RepoURL:        "", // required
+					Path:           "", // required
+					TargetRevision: "", // required
+					Helm: &v1alpha1.ApplicationSourceHelm{
+						ValueFiles: nil, // required
+					},
+				},
+			},
+		},
 	}
 
 	return c.applicationServiceClient.Create(context.Background(), &application.ApplicationCreateRequest{
@@ -65,6 +45,7 @@ func (c *Client) CreateApplication(app *v1alpha1.Application) (*v1alpha1.Applica
 	})
 }
 
+// DeleteApplication on the Client struct in Go. It takes in a string parameter app and returns an error.
 func (c *Client) DeleteApplication(app string) error {
 	_, err := c.applicationServiceClient.Delete(context.Background(), &application.ApplicationDeleteRequest{
 		Name: &app,
@@ -75,12 +56,14 @@ func (c *Client) DeleteApplication(app string) error {
 	return nil
 }
 
+// GetApplication on the Client struct in Go. It takes in a string parameter app and returns a pointer to v1alpha1.Application and an error.
 func (c *Client) GetApplication(app string) (*v1alpha1.Application, error) {
 	return c.applicationServiceClient.Get(context.Background(), &application.ApplicationQuery{
 		Name: &app,
 	})
 }
 
+// GetCustomActionList on the Client struct in Go. It takes in a string parameter app, a string parameter kind, a string parameter resourceName, and a string parameter namespace.
 func (c *Client) GetCustomActionList(app, kind, resourceName, namespace string) ([]string, error) {
 	version, group := getVariables(kind)
 	resp, err := c.applicationServiceClient.ListResourceActions(context.Background(), &application.ApplicationResourceRequest{
@@ -104,6 +87,7 @@ func (c *Client) GetCustomActionList(app, kind, resourceName, namespace string) 
 	return actionList, nil
 }
 
+// ListApplications on the Client struct in Go. It takes no parameters and returns a slice of v1alpha1.Application structs and an error.
 func (c *Client) ListApplications() ([]v1alpha1.Application, error) {
 	apps, err := c.applicationServiceClient.List(context.Background(), &application.ApplicationQuery{})
 	if err != nil {
@@ -113,6 +97,7 @@ func (c *Client) ListApplications() ([]v1alpha1.Application, error) {
 	return apps.Items, nil
 }
 
+// RunCustomAction on the Client struct in Go. It takes in four parameters: app, kind, resourceName, and namespace, all of type string.
 func (c *Client) RunCustomAction(app, kind, resourceName, namespace, actionName string) error {
 	version, group := getVariables(kind)
 	_, err := c.applicationServiceClient.RunResourceAction(context.Background(), &application.ResourceActionRunRequest{
@@ -130,6 +115,7 @@ func (c *Client) RunCustomAction(app, kind, resourceName, namespace, actionName 
 	return nil
 }
 
+// SyncApplication on the Client struct in Go. It takes in a string parameter app and a boolean parameter prune.
 func (c *Client) SyncApplication(app string, prune bool) error {
 	_, err := c.applicationServiceClient.Sync(context.Background(), &application.ApplicationSyncRequest{
 		Name:  &app,

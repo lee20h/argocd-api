@@ -18,17 +18,7 @@ func main() {
 		panic(err)
 	}
 
-	//actions, err := client.GetCustomActionList("gops-swagger-ui-blue", "Deployment", "swagger-ui", "gops")
-	//if err != nil {
-	//	panic(err)
-	//}
-
-	//err = client.RunCustomAction("gops-swagger-ui-blue", "Deployment", "swagger-ui", "gops", "restart")
-	//if err != nil {
-	//	panic(err)
-	//}
-
-	err = client.SyncApplication("gops-swagger-ui-blue", true)
+	err = client.SyncApplication("default", true)
 	if err != nil {
 		panic(err)
 	}

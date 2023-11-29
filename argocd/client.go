@@ -21,6 +21,7 @@ type Client struct {
 	applicationServiceClient application.ApplicationServiceClient
 }
 
+// NewClient on the Client struct in Go. It takes a c parameter and returns a pointer to Client and an error.
 func NewClient(c *Connection) (*Client, error) {
 	apiClient, err := apiclient.NewClient(&apiclient.ClientOptions{
 		ServerAddr: fmt.Sprintf(c.Address),
